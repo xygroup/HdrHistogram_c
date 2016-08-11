@@ -16,7 +16,6 @@ format_example
 *.o
 *.os
 .DS_Store
-build
 CMakeCache.txt
 CMakeFiles/
 CPackConfig.cmake
