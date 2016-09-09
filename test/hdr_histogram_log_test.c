@@ -14,10 +14,10 @@
 #include <time.h>
 
 #include <stdio.h>
-#include "hdr_time.h"
-#include <hdr_histogram.h>
-#include <hdr_histogram_log.h>
-#include <hdr_encoding.h>
+#include "hdr_histogram/hdr_time.h"
+#include "hdr_histogram/hdr_histogram.h"
+#include "hdr_histogram/hdr_histogram_log.h"
+#include "hdr_histogram/hdr_encoding.h"
 #include "minunit.h"
 
 #if defined(_MSC_VER)

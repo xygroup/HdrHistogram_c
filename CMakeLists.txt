@@ -1,46 +1,42 @@
-cmake_minimum_required(VERSION 2.8)
+project (hdr_histogram)
 
-if("${CMAKE_VERSION}" VERSION_GREATER 3.0.0)
-    cmake_policy(SET CMP0042 NEW)
-endif()
+cmake_minimum_required (VERSION 2.8)
 
-project("hdr_histogram")
+set(CMAKE_MACOSX_RPATH 1)
 
-# Follow all steps below in order to calculate new ABI version when updating the library
-# NOTE: THIS IS UNRELATED to the actual project version
-#
-# 1. If the library source code has changed at all since the last update, then increment revision
-# 2. If any interfaces have been added, removed, or changed since the last update, increment current and set revision to 0.
-# 3. If any interfaces have been added since the last public release, then increment age.
-# 4. If any interfaces have been removed since the last public release, then set age to 0.
+include(${WORKSPACE}/WORKSPACE.cmake)
 
-set(HDR_SOVERSION_CURRENT   1)
-set(HDR_SOVERSION_AGE       0)
-set(HDR_SOVERSION_REVISION  0)
+include_directories("." "./src")
 
-set(HDR_VERSION ${HDR_SOVERSION_CURRENT}.${HDR_SOVERSION_AGE}.${HDR_SOVERSION_REVISION})
-set(HDR_SOVERSION ${HDR_SOVERSION_CURRENT})
+set(CMAKE_C_FLAGS "-Wall -Wno-unknown-pragmas -Wextra -Wshadow -Winit-self -Wmissing-prototypes -D_GNU_SOURCE")
+set(CMAKE_C_FLAGS_DEBUG "-O0 -g")
+set(CMAKE_C_FLAGS_RELEASE "-O3 -g")
+add_compile_options(-DBAZEL=1)
 
-ENABLE_TESTING()
+FILE(GLOB CPP_FILES "${PROJECT_SOURCE_DIR}/src/*.c")
+FILE(GLOB H_FILES "${PROJECT_SOURCE_DIR}/src/*.h")
 
-if(UNIX)
-    set(CMAKE_C_FLAGS "-Wall -Wno-unknown-pragmas -Wextra -Wshadow -Winit-self -Wmissing-prototypes -D_GNU_SOURCE")
-    set(CMAKE_C_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_C_FLAGS_RELEASE "-O3 -g")
-endif()
+SET( SOURCE_FILES ${CPP_FILES} ${H_FILES})
 
-if(WIN32)
-    find_package (zlib REQUIRED)
-    include_directories(${ZLIB_INCLUDE_DIRS})
-endif()
+SET(BUILD_FILES
+${PROJECT_SOURCE_DIR}/BUILD
+${PROJECT_SOURCE_DIR}/PACKAGE.cmake
+)
 
-include_directories("${CMAKE_SOURCE_DIR}/src")
+include(${PROJECT_SOURCE_DIR}/PACKAGE.cmake)
 
-add_subdirectory("${CMAKE_SOURCE_DIR}/src")
-add_subdirectory("${CMAKE_SOURCE_DIR}/test")
-add_subdirectory("${CMAKE_SOURCE_DIR}/examples")
+add_library(hdr_histogram ${SOURCE_FILES} ${BUILD_FILES})
+target_link_libraries(hdr_histogram ${ZLIB_LIB})
 
-SET(CPACK_GENERATOR "TGZ")
-SET(CPACK_PACKAGE_VERSION "0.9.3")
+add_executable(perftest ${PROJECT_SOURCE_DIR}/test/hdr_histogram_perf.c ${BUILD_FILES})
+target_link_libraries(perftest ${HDR_HISTOGRAM_LIB})
 
-INCLUDE(CPack)
+add_executable(hdr_histogram_test ${PROJECT_SOURCE_DIR}/test/hdr_histogram_test.c ${BUILD_FILES})
+target_link_libraries(hdr_histogram_test ${HDR_HISTOGRAM_LIB})
+
+add_executable(hdr_histogram_log_test ${PROJECT_SOURCE_DIR}/test/hdr_histogram_log_test.c ${BUILD_FILES})
+target_link_libraries(hdr_histogram_log_test ${HDR_HISTOGRAM_LIB} ${ZLIB_LIB})
+
+add_custom_target (FORMAT ALL
+/usr/local/bin/clang-format -style=Google -i ${SOURCE_FILES} ${PROJECT_SOURCE_DIR}/test/hdr_histogram_perf.c ${PROJECT_SOURCE_DIR}/test/hdr_histogram_log_test.c ${PROJECT_SOURCE_DIR}/test/hdr_histogram_test.c
+)

@@ -38,6 +38,11 @@ extern "C" {
 int hdr_log_encode(struct hdr_histogram* histogram, char** encoded_histogram);
 
 /**
+ * Encode and compress the histogram with gzip. With length output
+ */
+int hdr_log_encode_len(struct hdr_histogram* histogram, char** encoded_histogram, size_t *base64_len);
+  
+/**
  * Decode and decompress the histogram with gzip.
  */
 int hdr_log_decode(struct hdr_histogram** histogram, char* base64_histogram, size_t base64_len);

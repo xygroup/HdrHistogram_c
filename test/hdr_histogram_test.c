@@ -10,7 +10,7 @@
 #include <errno.h>
 
 #include <stdio.h>
-#include <hdr_histogram.h>
+#include "hdr_histogram/hdr_histogram.h"
 
 #include "minunit.h"
 

@@ -12,6 +12,52 @@ cc_library(
         "src/*.h",
         "src/*.c",
     ]),
+    deps = [
+        "@zlib//:zlib",
+    ],
+    copts = [
+      "-Wall",
+      "-Wno-unknown-pragmas",
+      "-Wextra",
+      "-Wshadow",
+      "-Winit-self",
+      "-Wmissing-prototypes",
+      "-D_GNU_SOURCE",
+      "-O3",
+    ],
     linkstatic = 1,
     visibility = ["//visibility:private"],
+)
+
+cc_test(
+  name = "perftest",
+  srcs = [
+    "test/hdr_histogram_perf.c",
+  ],
+  deps = [
+    "@zlib//:zlib",
+    "//hdr_histogram",
+  ],
+)
+
+cc_test(
+name = "hdr_histogram_test",
+srcs = [
+"test/hdr_histogram_test.c",
+],
+deps = [
+"@zlib//:zlib",
+"//hdr_histogram",
+],
+)
+
+cc_test(
+name = "hdr_histogram_log_test",
+srcs = [
+"test/hdr_histogram_log_test.c",
+],
+deps = [
+"@zlib//:zlib",
+"//hdr_histogram",
+],
 )

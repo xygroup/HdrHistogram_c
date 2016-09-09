@@ -1172,6 +1172,43 @@ cleanup:
     return result;
 }
 
+int hdr_log_encode_len(struct hdr_histogram* histogram, char** encoded_histogram, size_t* base64_len)
+{
+  char *encoded_histogram_tmp = NULL;
+  uint8_t* compressed_histogram = NULL;
+  size_t compressed_len = 0;
+  int rc = 0;
+  int result = 0;
+  size_t encoded_len;
+  
+  rc = hdr_encode_compressed(histogram, &compressed_histogram, &compressed_len);
+  if (rc != 0)
+  {
+    FAIL_AND_CLEANUP(cleanup, result, rc);
+  }
+  
+  encoded_len = hdr_base64_encoded_len(compressed_len);
+  encoded_histogram_tmp = calloc(encoded_len + 1, sizeof(char));
+  
+  rc = hdr_base64_encode(
+                         compressed_histogram, compressed_len, encoded_histogram_tmp, encoded_len);
+  if (rc != 0)
+  {
+    FAIL_AND_CLEANUP(cleanup, result, rc);
+  }
+  
+  //base64_len = calloc(1, sizeof(size_t));
+  *base64_len = encoded_len;
+
+  *encoded_histogram = encoded_histogram_tmp;
+  
+cleanup:
+  free(compressed_histogram);
+  
+  return result;
+}
+
+
 int hdr_log_decode(struct hdr_histogram** histogram, char* base64_histogram, size_t base64_len)
 {
     int r;
