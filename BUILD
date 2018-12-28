@@ -1,8 +1,8 @@
-cc_inc_library(
+cc_library(
     name = "hdr_histogram",
     hdrs = glob(["src/*.h"]),
     deps = [":hdr_histogram_impl"],
-    prefix = "src",
+    include_prefix = "src",
     visibility = ["//visibility:public"],
 )
 
@@ -13,7 +13,7 @@ cc_library(
         "src/*.c",
     ]),
     deps = [
-        "@zlib//:zlib",
+        "//zlib",
     ],
     copts = [
       "-Wall",
@@ -35,7 +35,7 @@ cc_test(
     "test/hdr_histogram_perf.c",
   ],
   deps = [
-    "@zlib//:zlib",
+    "//zlib",
     "//hdr_histogram",
   ],
 )
@@ -46,7 +46,7 @@ srcs = [
 "test/hdr_histogram_test.c",
 ],
 deps = [
-"@zlib//:zlib",
+"//zlib",
 "//hdr_histogram",
 ],
 )
@@ -57,7 +57,7 @@ srcs = [
 "test/hdr_histogram_log_test.c",
 ],
 deps = [
-"@zlib//:zlib",
+"//zlib",
 "//hdr_histogram",
 ],
 )
